@@ -37,10 +37,22 @@ const GlobalPage = () => {
           defaultCollapseIcon={<ExpandMoreIcon />}
           defaultExpandIcon={<ChevronRightIcon />}
         >
-          {data.map((rec) => (
-            <TreeItem nodeId={rec[0]} label={rec[0]}>
-              {rec[1].map((v) => (
-                <TreeItem nodeId={v} label={v} />
+          {data.map((rec, n) => (
+            <TreeItem
+              key={n}
+              nodeId={rec[0].lemma}
+              label={`${rec[0].lemma} (${rec[1]
+                .map((v) => v.count)
+                .reduce((a, b) => a + b)} total of ${rec[1].length} GL word${
+                rec[1].length === 1 ? '' : 's'
+              })`}
+            >
+              {rec[1].map((v, n2) => (
+                <TreeItem
+                  key={n2}
+                  nodeId={v.gl}
+                  label={`${v.gl} (${v.count})`}
+                />
               ))}
             </TreeItem>
           ))}

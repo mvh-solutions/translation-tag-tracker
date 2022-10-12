@@ -64,14 +64,27 @@ const doGlobal = (usfmString) => {
             wrappers.pop();
             if (wrappers.length === 0) {
               for (const wrapper of currentWrapped.wrappers) {
-                if (!lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()]) {
-                  lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()] = {};
+                if (
+                  !lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()]
+                ) {
+                  lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()] =
+                    {};
                 }
-                const content = currentWrapped.wrapped.join(' ').toLocaleLowerCase();
-                if (!lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][content]) {
-                  lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][content] = 0;
+                const content = currentWrapped.wrapped
+                  .join(' ')
+                  .toLocaleLowerCase();
+                if (
+                  !lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
+                    content
+                  ]
+                ) {
+                  lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
+                    content
+                  ] = 0;
                 }
-                lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][content]++;
+                lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
+                  content
+                ]++;
               }
               currentWrapped = null;
             }
@@ -99,10 +112,13 @@ const doGlobal = (usfmString) => {
       a[0].toLocaleLowerCase().localeCompare(b[0].toLocaleLowerCase())
     )
     .map((lem) => [
-      lem[0],
+      { lemma: lem[0] },
       Object.entries(lem[1])
         .sort((a, b) => b[1] - a[1])
-        .map((e) => `${e[0]}: ${e[1]}`),
+        .map((e) => ({
+          gl: e[0],
+          count: e[1],
+        })),
     ]);
   return lemmaReport;
 };
