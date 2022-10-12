@@ -1,5 +1,13 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import TreeView from '@mui/lab/TreeView';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import TreeItem from '@mui/lab/TreeItem';
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 
@@ -22,28 +30,21 @@ const GlobalPage = () => {
   return (
     <Box className="page">
       <Header />
-      <Box
-        className="page_body"
-        sx={{
-          overflow: 'hidden',
-          overflowY: 'scroll',
-          height: '95vh',
-          width: '95vw',
-        }}
-      >
+      <Box className="page_body" sx={{}}>
         <Typography variant="h4">Global Reports</Typography>
-        <ul>
+        <TreeView
+          aria-label="file system navigator"
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+        >
           {data.map((rec) => (
-            <li>
-              <b>{rec[0]}</b>
-              <ul>
-                {rec[1].map((v) => (
-                  <li>{v}</li>
-                ))}
-              </ul>
-            </li>
+            <TreeItem nodeId={rec[0]} label={rec[0]}>
+              {rec[1].map((v) => (
+                <TreeItem nodeId={v} label={v} />
+              ))}
+            </TreeItem>
           ))}
-        </ul>
+        </TreeView>
       </Box>
     </Box>
   );

@@ -3,20 +3,15 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 body {
-  position: relative;
-  color: black;
-  height: 100vh;
-  font-family: sans-serif;
-  font-family: sans-serif;
-  overflow-y: hidden;
-  display: flex;
 }
 
-
 .page {
-  display: flex;
+  margin-top: 75px;
 }
 
 .page_body {
-  margin-top: 75px
+}
+
+.top_list_item {
+  vertical-align: top
 }
