@@ -40,7 +40,7 @@ const GlobalPage = () => {
           {data.map((rec, n) => (
             <TreeItem
               key={n}
-              nodeId={rec[0].lemma}
+              nodeId={`${n}`}
               label={`${rec[0].lemma} (${rec[1]
                 .map((v) => v.count)
                 .reduce((a, b) => a + b)} total of ${rec[1].length} GL word${
@@ -50,9 +50,11 @@ const GlobalPage = () => {
               {rec[1].map((v, n2) => (
                 <TreeItem
                   key={n2}
-                  nodeId={v.gl}
+                  nodeId={`${n}_${n2}`}
                   label={`${v.gl} (${v.count})`}
-                />
+                >
+                  {v.cvs.map((cv, n3) => <TreeItem key={n3} nodeId={`${n}_${n2}_${n3}`} label={`${cv.book} ${cv.chapter}:${cv.verse}`} />)}
+                </TreeItem>
               ))}
             </TreeItem>
           ))}

@@ -18,6 +18,7 @@ const doGlobal = (usfmString) => {
     `{
                 scripture: docSet(id:"abc_uvw") {
                     documents {
+                        bookCode: header(id:"bookCode")
                         cvIndexes {
                             chapter
                             verses {
@@ -39,8 +40,8 @@ const doGlobal = (usfmString) => {
   // Get alignment info from USFM
   const lemmaTranslations = {};
   for (const cvIndex of result.data.scripture.documents[0].cvIndexes) {
-    for (const verseItems of cvIndex.verses.map((v) =>
-      v.verse.map((v) => v.items).reduce((a, b) => [...a, ...b], [])
+    for (const [vn, verseItems] of cvIndex.verses.map((v, vn2) =>
+      [vn2, v.verse.map((v) => v.items).reduce((a, b) => [...a, ...b], [])]
     )) {
       const wrappers = [];
       let currentWrapped = null;
@@ -80,11 +81,14 @@ const doGlobal = (usfmString) => {
                 ) {
                   lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                     content
-                  ] = 0;
+                  ] = {count: 0, cvs: []};
                 }
                 lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                   content
-                ]++;
+                ].count++;
+                lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
+                  content
+                  ].cvs.push({book: result.data.scripture.documents[0].bookCode, chapter: cvIndex.chapter, verse: vn});
               }
               currentWrapped = null;
             }
@@ -117,7 +121,8 @@ const doGlobal = (usfmString) => {
         .sort((a, b) => b[1] - a[1])
         .map((e) => ({
           gl: e[0],
-          count: e[1],
+          count: e[1].count,
+          cvs: e[1].cvs,
         })),
     ]);
   return lemmaReport;
