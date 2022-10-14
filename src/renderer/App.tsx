@@ -42,8 +42,8 @@ const pk = new Proskomma();
 export default function App() {
 
   const usfmUrl =
-    `https://git.door43.org/unfoldingWord/en_ult/raw/branch/master/46-ROM.usfm`;
-    // 'https://raw.githubusercontent.com/mvh-solutions/translation-tag-tracker/main/data/lsg_aligned/alignedtext_41_mark.usfm';
+    // `https://git.door43.org/unfoldingWord/en_ult/raw/branch/master/46-ROM.usfm`;
+    'https://raw.githubusercontent.com/mvh-solutions/translation-tag-tracker/main/data/lsg_aligned/alignedtext_41_mark.usfm';
 
   useEffect(() => {
     const doFetch = async () => {

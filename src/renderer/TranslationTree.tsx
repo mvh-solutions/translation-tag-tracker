@@ -4,7 +4,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import React from 'react';
 
-const TranslationTree = ({ data, setVerseRef }) => {
+const TranslationTree = ({ data, setVerseRefs, setGL }) => {
   return (
     <TreeView
       aria-label="file system navigator"
@@ -26,16 +26,11 @@ const TranslationTree = ({ data, setVerseRef }) => {
               key={n2}
               nodeId={`${n}_${n2}`}
               label={`${v.gl} (${v.count})`}
-            >
-              {v.cvs.map((cv, n3) => (
-                <TreeItem
-                  key={n3}
-                  nodeId={`${n}_${n2}_${n3}`}
-                  label={`${cv.book} ${cv.chapter}:${cv.verse}`}
-                  onClick={() => setVerseRef(cv)}
-                />
-              ))}
-            </TreeItem>
+              onClick={() => {
+                setVerseRefs(v.cvs);
+                setGL(v.gl);
+              }}
+            />
           ))}
         </TreeItem>
       ))}
