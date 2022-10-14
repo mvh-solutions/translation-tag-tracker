@@ -1,66 +1,58 @@
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import TreeView from '@mui/lab/TreeView';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import TreeItem from '@mui/lab/TreeItem';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
 import React, { useState, useEffect } from 'react';
-import Axios from 'axios';
 
 import Header from './Header';
 import doGlobal from './doGlobal';
+import TranslationTree from './TranslationTree';
 
-const GlobalPage = () => {
+const GlobalPage = ({ pk }) => {
   const [data, setData] = useState([]);
-  const usfmUrl =
-    'https://raw.githubusercontent.com/mvh-solutions/translation-tag-tracker/main/data/lsg_aligned/alignedtext_41_mark.usfm';
+  const [verseRef, setVerseRef] = useState(null);
+  const [verseContent, setVerseContent] = useState('');
 
   useEffect(() => {
-    const doFetch = async () => {
-      const response = await Axios.get(usfmUrl);
-      setData(doGlobal(response.data));
-    };
-    doFetch();
+    setData(doGlobal(pk));
   }, []);
 
+  useEffect(() => {
+    if (verseRef) {
+      const result = pk.gqlQuerySync(`{
+        documents {
+          cv(chapter:"${verseRef.chapter}" verses: ["${verseRef.verse}"]){ text }
+        }
+      }`);
+      setVerseContent(
+        `${verseRef.book} ${verseRef.chapter}:${
+          verseRef.verse
+        } - ${result.data.documents[0].cv.map((c) => c.text).join(' ')}`
+      );
+    }
+  }, [verseRef]);
+
   return (
-    <Box className="page">
-      <Header />
-      <Box className="page_body" sx={{}}>
-        <Typography variant="h4">Global Reports</Typography>
-        <TreeView
-          aria-label="file system navigator"
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
+    <Container className="page">
+      <Header pageTitle="Lemmas" />
+      <Grid className="page_body" container spacing={2}>
+        <Grid
+          item
+          xs={6}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: 700,
+            overflow: 'hidden',
+            overflowY: 'scroll',
+          }}
         >
-          {data.map((rec, n) => (
-            <TreeItem
-              key={n}
-              nodeId={`${n}`}
-              label={`${rec[0].lemma} (${rec[1]
-                .map((v) => v.count)
-                .reduce((a, b) => a + b)} total of ${rec[1].length} GL word${
-                rec[1].length === 1 ? '' : 's'
-              })`}
-            >
-              {rec[1].map((v, n2) => (
-                <TreeItem
-                  key={n2}
-                  nodeId={`${n}_${n2}`}
-                  label={`${v.gl} (${v.count})`}
-                >
-                  {v.cvs.map((cv, n3) => <TreeItem key={n3} nodeId={`${n}_${n2}_${n3}`} label={`${cv.book} ${cv.chapter}:${cv.verse}`} />)}
-                </TreeItem>
-              ))}
-            </TreeItem>
-          ))}
-        </TreeView>
-      </Box>
-    </Box>
+          <TranslationTree data={data} setVerseRef={setVerseRef} />
+        </Grid>
+        <Grid item xs={6} styles={{ padding: '2em' }}>
+          <Typography variant="body1">{verseContent}</Typography>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 export default GlobalPage;

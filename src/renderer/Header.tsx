@@ -4,10 +4,11 @@ import AppBar from '@mui/material/AppBar';
 import ToolBar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-const Header = () => {
+const Header = ({pageTitle}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -74,7 +75,7 @@ const Header = () => {
             Global Reports
           </MenuItem>
         </Menu>
-        ζητοῦμεν
+        <Typography variant="h5">{pageTitle} - ζητοῦμεν</Typography>
       </ToolBar>
     </AppBar>
   );

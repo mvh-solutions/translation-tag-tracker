@@ -1,18 +1,4 @@
-import { Proskomma } from 'proskomma';
-
-const doGlobal = (usfmString) => {
-  const pk = new Proskomma();
-
-  // Load USFM
-  pk.importDocument(
-    {
-      lang: 'abc',
-      abbr: 'uvw',
-    },
-    'usfm',
-    usfmString
-  );
-
+const doGlobal = (pk) => {
   // Run query
   const result = pk.gqlQuerySync(
     `{
@@ -40,9 +26,10 @@ const doGlobal = (usfmString) => {
   // Get alignment info from USFM
   const lemmaTranslations = {};
   for (const cvIndex of result.data.scripture.documents[0].cvIndexes) {
-    for (const [vn, verseItems] of cvIndex.verses.map((v, vn2) =>
-      [vn2, v.verse.map((v) => v.items).reduce((a, b) => [...a, ...b], [])]
-    )) {
+    for (const [vn, verseItems] of cvIndex.verses.map((v, vn2) => [
+      vn2,
+      v.verse.map((v) => v.items).reduce((a, b) => [...a, ...b], []),
+    ])) {
       const wrappers = [];
       let currentWrapped = null;
       for (const item of verseItems) {
@@ -81,14 +68,18 @@ const doGlobal = (usfmString) => {
                 ) {
                   lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                     content
-                  ] = {count: 0, cvs: []};
+                  ] = { count: 0, cvs: [] };
                 }
                 lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                   content
                 ].count++;
                 lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                   content
-                  ].cvs.push({book: result.data.scripture.documents[0].bookCode, chapter: cvIndex.chapter, verse: vn});
+                ].cvs.push({
+                  book: result.data.scripture.documents[0].bookCode,
+                  chapter: cvIndex.chapter,
+                  verse: vn,
+                });
               }
               currentWrapped = null;
             }
