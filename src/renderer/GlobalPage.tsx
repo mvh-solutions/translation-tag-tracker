@@ -12,7 +12,7 @@ const GlobalPage = ({ pk }) => {
   const [data, setData] = useState([]);
   const [verseRefs, setVerseRefs] = useState([]);
   const [versesContent, setVersesContent] = useState([]);
-  const [bookCode, setBookCode] = useState('?');
+  const [bookCode, setBookCode] = useState('TIT');
   const [gL, setGL] = useState('');
 
   useEffect(() => {
@@ -26,14 +26,12 @@ const GlobalPage = ({ pk }) => {
           `cv${n}: cv(chapter:"${vr.chapter}" verses: ["${vr.verse}"]){ tokens { subType payload } scopeLabels }`
       );
       const result = pk.gqlQuerySync(`{
-        documents {
+        document(docSetId:"eng_ult" bookCode:"${bookCode}") {
           bookCode: header(id: "bookCode")
           ${cvClauses.join('\n')}
         }
       }`);
-      setBookCode(result.data.documents[0].bookCode);
-      const cvs = Object.entries(result.data.documents[0])
-        .filter((kv) => kv[0] !== 'bookCode')
+      const cvs = Object.entries(result.data.document)
         .map((kv) => kv[1]);
       setVersesContent(cvs);
     }
