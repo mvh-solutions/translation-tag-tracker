@@ -101,6 +101,16 @@ const configuration: webpack.Configuration = {
     ],
   },
 
+  resolve: {
+    fallback: {
+      fs: false,
+      crypto: false,
+    },
+    alias: {
+      process: 'process/browser',
+    },
+  },
+
   plugins: [
     /**
      * Create global constants which can be configured at compile time.
