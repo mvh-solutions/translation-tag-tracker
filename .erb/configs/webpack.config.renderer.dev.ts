@@ -60,6 +60,17 @@ const configuration: webpack.Configuration = {
     },
   },
 
+  resolve: {
+    fallback: {
+      fs: false,
+      string_decoder: false,
+      crypto: false,
+    },
+    alias: {
+      process: 'process/browser',
+    },
+  },
+
   module: {
     rules: [
       {
