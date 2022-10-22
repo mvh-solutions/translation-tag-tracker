@@ -2,19 +2,17 @@ const doGlobal = (pk) => {
   // Run query
   const result = pk.gqlQuerySync(
     `{
-                scripture: docSet(id:"abc_uvw") {
-                    documents {
-                        bookCode: header(id:"bookCode")
-                        cvIndexes {
-                            chapter
-                            verses {
-                                verse {
-                                    verseRange
-                                    items {
-                                        type
-                                        subType
-                                        payload
-                                }
+            scripture: document(docSetId:"eng_ult" withBook:"TIT") {
+                bookCode: header(id:"bookCode")
+                cvIndexes {
+                    chapter
+                    verses {
+                        verse {
+                            verseRange
+                            items {
+                                type
+                                subType
+                                payload
                             }
                         }
                     }
@@ -25,7 +23,7 @@ const doGlobal = (pk) => {
 
   // Get alignment info from USFM
   const lemmaTranslations = {};
-  for (const cvIndex of result.data.scripture.documents[0].cvIndexes) {
+  for (const cvIndex of result.data.scripture.cvIndexes) {
     for (const [vn, verseItems] of cvIndex.verses.map((v, vn2) => [
       vn2,
       v.verse.map((v) => v.items).reduce((a, b) => [...a, ...b], []),
@@ -41,7 +39,7 @@ const doGlobal = (pk) => {
             if (currentWrapped) {
               currentWrapped.wrappers.push({});
             } else {
-              currentWrapped = { wrappers: [{}], wrapped: [] };
+              currentWrapped = {wrappers: [{}], wrapped: []};
             }
             wrappers.push({});
           }
@@ -64,19 +62,19 @@ const doGlobal = (pk) => {
                 if (
                   !lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                     content
-                  ]
+                    ]
                 ) {
                   lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                     content
-                  ] = { count: 0, cvs: [] };
+                    ] = {count: 0, cvs: []};
                 }
                 lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                   content
-                ].count++;
+                  ].count++;
                 lemmaTranslations[wrapper['x-lemma'].toLocaleLowerCase()][
                   content
-                ].cvs.push({
-                  book: result.data.scripture.documents[0].bookCode,
+                  ].cvs.push({
+                  book: result.data.scripture.bookCode,
                   chapter: cvIndex.chapter,
                   verse: vn,
                 });
@@ -91,7 +89,7 @@ const doGlobal = (pk) => {
           ) {
             currentWrapped.wrappers[currentWrapped.wrappers.length - 1][
               item.payload.split('/')[3]
-            ] = item.payload.split('/')[5];
+              ] = item.payload.split('/')[5];
           }
         }
         if (item.subType === 'wordLike' && currentWrapped) {
@@ -107,7 +105,7 @@ const doGlobal = (pk) => {
       a[0].toLocaleLowerCase().localeCompare(b[0].toLocaleLowerCase())
     )
     .map((lem) => [
-      { lemma: lem[0] },
+      {lemma: lem[0]},
       Object.entries(lem[1])
         .sort((a, b) => b[1] - a[1])
         .map((e) => ({

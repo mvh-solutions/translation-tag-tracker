@@ -21,21 +21,25 @@ const GlobalPage = ({ pk }) => {
 
   useEffect(() => {
     if (verseRefs.length > 0) {
+      console.log("verseRefs", verseRefs);
       const cvClauses = verseRefs.map(
         (vr, n) =>
           `cv${n}: cv(chapter:"${vr.chapter}" verses: ["${vr.verse}"]){ tokens { subType payload } scopeLabels }`
       );
       const result = pk.gqlQuerySync(`{
-        document(docSetId:"eng_ult" bookCode:"${bookCode}") {
+        document(docSetId:"eng_ult" withBook:"${bookCode}") {
           bookCode: header(id: "bookCode")
           ${cvClauses.join('\n')}
         }
       }`);
       const cvs = Object.entries(result.data.document)
+        .filter(kv => kv[0] !== 'bookCode')
         .map((kv) => kv[1]);
       setVersesContent(cvs);
     }
   }, [verseRefs]);
+
+  console.log(versesContent);
 
   return (
     <Container className="page">
@@ -70,22 +74,22 @@ const GlobalPage = ({ pk }) => {
             {versesContent.map((vc, n) => (
               <div key={n}>
                 <Typography key={`${n}Ref`} variant="body1">
-                  {bookCode}{' '}
+                  {vc[0]}{' '}
                   {
-                    vc[0].scopeLabels
+                    vc[1].scopeLabels
                       .filter((sl) => sl.startsWith('chapter'))[0]
                       .split('/')[1]
                   }
                   :
                   {
-                    vc[0].scopeLabels
+                    vc[1].scopeLabels
                       .filter((sl) => sl.startsWith('verse'))[0]
                       .split('/')[1]
                   }
                 </Typography>
                 <Typography key={`${n}Body`} variant="body2">
                   {' '}
-                  {vc[0].tokens.map(t => t.payload === gL ? <b>{t.payload}</b> : t.payload)}
+                  {vc[1].tokens.map(t => t.payload === gL ? <b>{t.payload}</b> : t.payload)}
                 </Typography>
               </div>
             ))}
