@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Header from './Header';
 
 import SourcesPage from './SourcesPage';
-import GlobalPage from './GlobalPage';
+import LemmaTranslationsPage from './LemmaTranslationsPage';
 import './App.css';
 import Axios from 'axios';
 
@@ -22,8 +22,8 @@ const HomePage = () => {
 const pk = new Proskomma();
 
 export default function App() {
-  const [translation, setTranslation] = useState('eng_ult');
-  const [translations, setTranslations] = useState([]);
+  const [translation, setTranslation] = useState('fra_lsg');
+  const [docSets, setDocSets] = useState({});
   const downloadUrls = {
     eng_ult: 'https://mvh.bible/serializedSuccinct/eng_ult_pkserialized.json',
     eng_ust: 'https://mvh.bible/serializedSuccinct/eng_ust_pkserialized.json',
@@ -33,9 +33,15 @@ export default function App() {
     const doFetch = async () => {
       const response = await Axios.get(downloadUrls[translation]);
       pk.loadSuccinctDocSet(response.data);
-      const loadedTranslations =
-        pk.gqlQuerySync('{docSets { id }}').data.docSets.map (ds => ds.id);
-      setTranslations(loadedTranslations);
+      const docSetsResponse =
+        pk.gqlQuerySync('{docSets { id documents { bookCode: header(id:"bookCode") } } }');
+      const newDocSets = {};
+      for (const docSet of docSetsResponse.data.docSets) {
+        newDocSets[docSet.id] = {
+          documents: docSet.documents.map(d => d.bookCode),
+        }
+      }
+      setDocSets(newDocSets);
     };
     if (translation && downloadUrls[translation]) {
       const loadedTranslations =
@@ -55,9 +61,19 @@ export default function App() {
           element={
             <SourcesPage
               translation={translation}
-              translations={translations}
+              docSets={docSets}
               setTranslation={setTranslation}
               availableTranslations={Object.keys(downloadUrls)}
+            />
+          }
+        />
+        <Route
+          path="/lemma-translations"
+          element={
+            <LemmaTranslationsPage
+              proskomma={pk}
+              translation={translation}
+              docSets={docSets}
             />
           }
         />

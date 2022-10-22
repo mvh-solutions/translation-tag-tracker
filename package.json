@@ -123,6 +123,7 @@
     "fse": "^4.0.1",
     "js-yaml-parser": "^1.0.0",
     "proskomma": "^0.8.0",
+    "proskomma-json-tools": "^0.5.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0"

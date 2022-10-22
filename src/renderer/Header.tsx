@@ -60,19 +60,11 @@ const Header = ({pageTitle}) => {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              navigate('/content');
+              navigate('/lemma-translations');
               handleClose();
             }}
           >
-            View Content
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              navigate('/global');
-              handleClose();
-            }}
-          >
-            Global Reports
+            Lemma Translations
           </MenuItem>
         </Menu>
         <Typography variant="h5">{pageTitle} - ζητοῦμεν</Typography>

@@ -7,12 +7,16 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import Header from './Header';
 
-const SourcesPage = ({ translation, translations, setTranslation, availableTranslations}) => {
-
+const SourcesPage = ({
+  translation,
+  docSets,
+  setTranslation,
+  availableTranslations,
+}) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTranslation((event.target as HTMLInputElement).value);
   };
@@ -22,23 +26,23 @@ const SourcesPage = ({ translation, translations, setTranslation, availableTrans
       <Grid className="page_body" container spacing={2}>
         <Grid item>
           <FormControl>
-            <FormLabel id="sources-buttons-group">Selected Translation</FormLabel>
+            <FormLabel id="sources-buttons-group">
+              <Typography variant="h5">Selected Translation</Typography>
+            </FormLabel>
             <RadioGroup
               aria-labelledby="sources-buttons-group"
               name="sources-buttons"
               value={translation}
               onChange={handleChange}
             >
-              {
-                availableTranslations.map((t, n) =>
+              {availableTranslations.map((t, n) => (
                 <FormControlLabel
                   key={n}
                   value={t}
                   control={<Radio />}
-                  label={`${t}${translations.includes(t) ? ' (loaded)' : ''}`}
+                  label={`${t}${docSets[t] ? ' (loaded)' : ''}`}
                 />
-                )
-              }
+              ))}
             </RadioGroup>
           </FormControl>
         </Grid>
