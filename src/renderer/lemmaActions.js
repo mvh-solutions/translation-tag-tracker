@@ -56,7 +56,7 @@ const lemmaActions = {
           if (!output.lemmas[lemma]) {
             output.lemmas[lemma] = {};
           }
-          const text = context.sequences[0].element.text;
+          const text = context.sequences[0].element.text.toLowerCase();
           if (!output.lemmas[lemma][text]) {
             output.lemmas[lemma][text] = [];
           }

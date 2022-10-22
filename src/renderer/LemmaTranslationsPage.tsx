@@ -5,6 +5,7 @@ import { PerfRenderFromProskomma} from 'proskomma-json-tools';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import lemmaActions from './lemmaActions';
@@ -15,6 +16,8 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
   const [bookCode, setBookCode] = useState('MAT');
   const [processAll, setProcessAll] = useState(false);
   const [lemmas, setLemmas] = useState({});
+  const [verseRefs, setVerseRefs] = useState([]);
+  const [verseContent, setVerseContent] = useState([]);
 
   useEffect(() => {
     if (!lemmas[bookCode] && docSets[translation]) {
@@ -29,6 +32,12 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
       setLemmas(newLemmas);
     }
   }, [processAll, bookCode, translation]);
+
+  useEffect(
+    () => {
+      setVerseContent(verseRefs);
+    }, [verseRefs]
+  );
 
   return (
     <Container className="page">
@@ -69,12 +78,12 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
             </Button>
           </Grid>
         </Grid>
-        <Grid container className="results">
-          <Grid item xs={6}>
-            {lemmas[bookCode] && <TranslationTree lemma={lemmas[bookCode]} />}
+        <Grid container className="results" style={{display: "flex"}}>
+          <Grid item xs={6} style={{maxHeight: '500px', overflow: 'auto'}}>
+            {lemmas[bookCode] && <TranslationTree lemma={lemmas[bookCode]} setVerseRefs={setVerseRefs} />}
           </Grid>
-          <Grid item xs={6}>
-            Verses go here
+          <Grid item xs={6} style={{maxHeight: '500px', overflow: 'auto'}}>
+            {verseContent.map((c, n) => <Box key={n}>{c}</Box>)}
           </Grid>
         </Grid>
       </Grid>
