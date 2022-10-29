@@ -76,6 +76,7 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: true,
+      sandbox: false,
       contextIsolation: false,
       webSecurity: false,
       preload: app.isPackaged

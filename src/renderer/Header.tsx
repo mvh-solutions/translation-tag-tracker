@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
-const Header = ({pageTitle}) => {
+const Header = ({pageTitle, nDocSets}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -63,6 +63,7 @@ const Header = ({pageTitle}) => {
               navigate('/lemma-translations');
               handleClose();
             }}
+            disabled={nDocSets === 0}
           >
             Lemma Translations
           </MenuItem>
