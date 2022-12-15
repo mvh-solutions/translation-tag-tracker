@@ -3,7 +3,7 @@ const lemmaActions = {
     {
       description: 'Set up storage',
       test: () => true,
-      action: ({ context, workspace, output }) => {
+      action: ({context, workspace, output}) => {
         workspace.bookCode = context.document.metadata.document.bookCode;
         workspace.chapter = null;
         workspace.verses = null;
@@ -16,8 +16,8 @@ const lemmaActions = {
     {
       description: 'Update CV state',
       test: () => true,
-      action: ({ context, workspace }) => {
-        const { element } = context.sequences[0];
+      action: ({context, workspace}) => {
+        const {element} = context.sequences[0];
         if (element.subType === 'chapter') {
           workspace.chapter = element.atts.number;
           workspace.verses = 0;
@@ -30,8 +30,8 @@ const lemmaActions = {
   startMilestone: [
     {
       description: 'Add lemma',
-      test: ({ context }) => context.sequences[0].element.subType === 'usfm:zaln',
-      action: ({ context, workspace }) => {
+      test: ({context}) => context.sequences[0].element.subType === 'usfm:zaln',
+      action: ({context, workspace}) => {
         workspace.activeLemmas.push(
           context.sequences[0].element.atts['x-lemma'][0].toLowerCase()
         );
@@ -41,8 +41,8 @@ const lemmaActions = {
   endMilestone: [
     {
       description: 'Remove lemma',
-      test: ({ context }) => context.sequences[0].element.subType === 'usfm:zaln',
-      action: ({ context, workspace }) => {
+      test: ({context}) => context.sequences[0].element.subType === 'usfm:zaln',
+      action: ({context, workspace}) => {
         workspace.activeLemmas.pop();
       },
     },
@@ -50,8 +50,8 @@ const lemmaActions = {
   text: [
     {
       description: 'Make lemma record',
-      test: ({ workspace }) => workspace.activeLemmas.length > 0,
-      action: ({ context, workspace, output }) => {
+      test: ({workspace}) => workspace.activeLemmas.length > 0,
+      action: ({context, workspace, output}) => {
         for (const lemma of workspace.activeLemmas) {
           if (!output.lemmas[lemma]) {
             output.lemmas[lemma] = {};
