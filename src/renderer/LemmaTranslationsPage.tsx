@@ -165,19 +165,19 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
                     variant="body1"
                     sx={{ fontWeight: db === bookCode ? 'bold' : 'normal' }}
                   >
-                    {db}
+                    {db}{lemmas[db] ? "*" : ""}
                   </Typography>
                 </Button>
               </Grid>
             ))}
-          <Grid item xs={12}>
+          <Grid item xs={1}>
             <Button
               size="small"
               color="secondary"
-              variant={processAll ? 'contained' : 'outlined'}
+              variant="text"
               onClick={() => setProcessAll(!processAll)}
             >
-              <Typography variant="body1">All BOOKS</Typography>
+              <Typography variant="body1">{processAll ? <b>All</b> : "All"}</Typography>
             </Button>
           </Grid>
         </Grid>
@@ -196,8 +196,8 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
           ))}
         </Grid>
         <Grid container className="results" style={{ display: 'flex' }}>
-          <Grid item xs={6} style={{ maxHeight: '500px', overflow: 'auto' }}>
-            {lemmas[bookCode] && (
+          <Grid item xs={6} style={{ maxHeight: '650px', overflow: 'auto' }}>
+            {(lemmas[bookCode] || processAll) && (
               <TranslationTree
                 lemma={processAll ? mergeLemmas() : lemmas[bookCode]}
                 setVerseRefs={setVerseRefs}
@@ -205,7 +205,7 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
               />
             )}
           </Grid>
-          <Grid item xs={6} style={{ maxHeight: '500px', overflow: 'auto' }}>
+          <Grid item xs={6} style={{ maxHeight: '650px', overflow: 'auto' }}>
             {verseContent.map((c, n) => (
               <Box key={n}>{c}</Box>
             ))}
