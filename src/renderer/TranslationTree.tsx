@@ -79,7 +79,7 @@ const TranslationTree = ({lemma, setVerseRefs, selectedLetter}) => {
                 key={n2}
                 nodeId={`${n}_${n2}`}
                 label={`${kv2[0]} (${kv2[1].length})`}
-                onClick={() => setVerseRefs(kv2[1])}
+                onClick={() => setVerseRefs(kv2)}
               />
             ))}
           </TreeItem>

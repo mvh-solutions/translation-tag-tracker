@@ -69,26 +69,77 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
     'ω',
   ];
 
+  const mergeLemmas = () => {
+    const ret = {};
+    for (const bookLemmas of Object.values(lemmas)) {
+      for (const [lemma, lemmaValues] of Object.entries(bookLemmas)) {
+        if (!ret[lemma]) {
+          ret[lemma] = {};
+        }
+        for (const [lemmaTranslation, lemmaReferences] of Object.entries(
+          lemmaValues
+        )) {
+          if (ret[lemma][lemmaTranslation]) {
+            for (const reference of lemmaReferences) {
+              ret[lemma][lemmaTranslation].add(reference);
+            }
+          } else {
+            ret[lemma][lemmaTranslation] = new Set(lemmaReferences);
+          }
+        }
+      }
+    }
+    for (const [lemma, lemmaValues] of Object.entries(ret)) {
+      for (const lemmaTranslation of Object.keys(lemmaValues)) {
+        ret[lemma][lemmaTranslation] = Array.from(ret[lemma][lemmaTranslation]);
+      }
+    }
+    return ret;
+  };
+
   useEffect(() => {
-    if (!lemmas[bookCode] && docSets[translation]) {
-      const docId = proskomma.gqlQuerySync(
-        `{document(docSetId:"${translation}" withBook:"${bookCode}") {id}}`
-      ).data.document.id;
-      const pkRender = new PerfRenderFromProskomma({
-        proskomma,
-        actions: lemmaActions,
-      });
-      const output = {};
-      pkRender.renderDocument({ docId, config: {}, output });
-      const newLemmas = { ...lemmas };
-      newLemmas[bookCode] = output.lemmas;
+    const newLemmas = { ...lemmas };
+    let changed = false;
+    for (const selectedBookCode of processAll
+      ? docSets[translation].documents
+      : [bookCode]) {
+      console.log(selectedBookCode);
+      if (!lemmas[selectedBookCode] && docSets[translation]) {
+        changed = true;
+        const docId = proskomma.gqlQuerySync(
+          `{document(docSetId:"${translation}" withBook:"${selectedBookCode}") {id}}`
+        ).data.document.id;
+        const pkRender = new PerfRenderFromProskomma({
+          proskomma,
+          actions: lemmaActions,
+        });
+        const output = {};
+        pkRender.renderDocument({ docId, config: {}, output });
+        newLemmas[selectedBookCode] = output.lemmas;
+      }
+    }
+    if (changed) {
       setLemmas(newLemmas);
-      const firstLetters = new Set([]);
     }
   }, [processAll, bookCode, translation]);
 
   useEffect(() => {
-    setVerseContent(verseRefs);
+    if (verseRefs.length === 0) {
+      return;
+    }
+    const newVerseContent = [];
+    const [translationTerm, translationRefs] = verseRefs;
+    for (const verseRef of translationRefs) {
+      const [book, cv] = verseRef.split(' ');
+      const [c, v] = cv.split(':');
+      const refText = proskomma
+        .gqlQuerySync(
+          `{ document(docSetId: """${translation}""" withBook: """${book}""") { cv(chapter:"""${c}""" verses:["""${v}"""]) { tokens { payload } } } }`
+        )
+        .data.document.cv[0].tokens.map((t) => t.payload.toLowerCase() === translationTerm ? <u><i>{t.payload}</i></u> : t.payload);
+      newVerseContent.push([<b>{verseRef}</b>, ' - ', ...refText]);
+    }
+    setVerseContent(newVerseContent);
   }, [verseRefs]);
 
   return (
@@ -130,13 +181,13 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
             </Button>
           </Grid>
         </Grid>
-        <Grid container className="greek_lemma" xs={12}>
+        <Grid container className="greek_lemma">
           {initialLetters.map((l, n) => (
             <Grid key={n} item xs={1}>
               <Button
                 size="small"
                 color="secondary"
-                variant={l === selectedLetter ? 'contained' : 'outlined'}
+                variant={l === selectedLetter ? 'contained' : 'text'}
                 onClick={() => setSelectedLetter(l)}
               >
                 <Typography variant="body1">{l}</Typography>
@@ -148,7 +199,7 @@ const LemmaTranslationsPage = ({ proskomma, translation, docSets }) => {
           <Grid item xs={6} style={{ maxHeight: '500px', overflow: 'auto' }}>
             {lemmas[bookCode] && (
               <TranslationTree
-                lemma={lemmas[bookCode]}
+                lemma={processAll ? mergeLemmas() : lemmas[bookCode]}
                 setVerseRefs={setVerseRefs}
                 selectedLetter={selectedLetter}
               />
